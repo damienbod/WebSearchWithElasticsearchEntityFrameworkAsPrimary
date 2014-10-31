@@ -92,8 +92,10 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		}
 
 		public void DeleteAddress(long addressId)
-		{	
-			_entityFrameworkContext.Address.Remove(_entityFrameworkContext.Address.First(t => t.AddressID == addressId));
+		{
+			var address = new Address { AddressID = (int)addressId };
+			_entityFrameworkContext.Address.Attach(address);
+			_entityFrameworkContext.Address.Remove(address);
 			_elasticsearchContext.DeleteDocument<Address>(addressId);
 
 			_entityFrameworkContext.SaveChanges();

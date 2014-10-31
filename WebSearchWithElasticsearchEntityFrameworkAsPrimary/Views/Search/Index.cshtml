@@ -73,7 +73,22 @@
                     multiSorting: true,
                     defaultSorting: 'City asc',
                     actions: {
-                        deleteAction: 'http://localhost:49908/Search/DeleteAddress',
+                        deleteAction: function (postData) {
+                            
+                            var resultData = $.ajax({
+                                url: 'http://localhost:49908/Search/DeleteAddress?addressId=' + postData.AddressID,
+                                type: 'POST',
+                                dataType: 'json',
+                                success: function (data) {
+                                    return data;
+                                },
+                                error: function () {
+
+                                }
+                            });
+
+                            return resultData;
+                        },
                         listAction: function (postData, jtParams) {
                             var resultData = $.ajax({
                                 url: 'http://localhost:49908/Search/GetAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
