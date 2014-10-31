@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search;
@@ -42,6 +43,20 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Controllers
 			try
 			{
 				_searchProvider.AddUpdateDocument(address);
+				return Json(new { Result = "OK", Record = address });
+			}
+			catch (Exception ex)
+			{
+				return Json(new { Result = "ERROR", Message = ex.Message });
+			}
+		}
+
+		[Route("UpdateAddressForStateProvince")]
+		public JsonResult UpdateAddressForStateProvince(Address address)
+		{
+			try
+			{
+				_searchProvider.UpdateAddresses(address.StateProvinceID, new List<Address> { address });
 				return Json(new { Result = "OK", Records = address });
 			}
 			catch (Exception ex)

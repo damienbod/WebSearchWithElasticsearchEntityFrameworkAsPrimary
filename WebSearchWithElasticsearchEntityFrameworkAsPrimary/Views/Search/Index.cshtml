@@ -126,7 +126,7 @@
                     updateAction: function(postData) {
                         return $.Deferred(function ($dfd) {
                             $.ajax({
-                                url: 'http://localhost:49907/Search/CreateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
+                                url: 'http://localhost:49907/Search/UpdateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
                                 type: 'POST',
                                 dataType: 'json',
                                 data: postData,
@@ -143,8 +143,8 @@
                 fields: {
                     AddressID: {
                         key: true,
-                        create: true,
-                        edit: true,
+                        create: false,
+                        edit: false,
                         list: true
                     },
                     AddressLine1: {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
@@ -11,7 +12,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 {
 	public class ElasticsearchProvider : ISearchProvider, IDisposable
 	{
-		private const string ConnectionString = "http://localhost:9200/";
+		private const string ConnectionString = "http://localhost.fiddler:9200/";
 		private readonly IElasticsearchMappingResolver _elasticsearchMappingResolver;
 		private readonly ElasticsearchContext _elasticsearchContext;
 		private readonly EfModel _entityFrameworkContext;
@@ -20,6 +21,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		{
 			_elasticsearchMappingResolver = new ElasticsearchMappingResolver();
 			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Address), new ElasticsearchMappingAddress());
+			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Address).BaseType, new ElasticsearchMappingAddress());
 		    _elasticsearchContext = new ElasticsearchContext(ConnectionString, new ElasticsearchSerializerConfiguration(_elasticsearchMappingResolver,true,true));
 			_entityFrameworkContext = new EfModel();
 		}
@@ -67,13 +69,21 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			{
 				// if the parent has changed, the child needs to be deleted and created again. This in not required in this example
 				var addressItem = _elasticsearchContext.SearchById<Address>(item.AddressID);
-				if (addressItem.StateProvinceID != item.StateProvinceID)
+				// need to update a entity here
+				var entityAddress = _entityFrameworkContext.Address.First(t => t.AddressID == addressItem.AddressID);
+
+				if (entityAddress.StateProvinceID != addressItem.StateProvinceID)
 				{
-					_elasticsearchContext.DeleteDocument<Address>(item.AddressID);
+					_elasticsearchContext.DeleteDocument<Address>(addressItem.AddressID);
 				}
 
-				// need to update a entity here
-				_entityFrameworkContext.Address.Add(addressItem);
+				entityAddress.AddressLine1 = addressItem.AddressLine1;
+				entityAddress.AddressLine2 = addressItem.AddressLine2;
+				entityAddress.City = addressItem.City;
+				entityAddress.ModifiedDate = DateTime.UtcNow;
+				entityAddress.PostalCode = addressItem.PostalCode;
+				entityAddress.rowguid = addressItem.rowguid;
+
 				_elasticsearchContext.AddUpdateDocument(item, item.AddressID, item.StateProvinceID);
 			}
 
@@ -97,7 +107,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 						 {
 							 Text = string.Format("StateProvince: {0}, CountryRegionCode {1}", 
 							 element.StateProvinceCode, element.CountryRegionCode), 
-							 Value = element.StateProvinceID.ToString()
+							 Value = element.StateProvinceID.ToString(CultureInfo.InvariantCulture)
 						 };
 
 			return result.ToList();
