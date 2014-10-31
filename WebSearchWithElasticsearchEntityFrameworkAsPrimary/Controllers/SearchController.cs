@@ -38,10 +38,11 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Controllers
 		}
 
 		[Route("CreateAddressForStateProvince")]
-		public JsonResult CreateAddressForStateProvince(Address address)
+		public JsonResult CreateAddressForStateProvince(Address address, string stateprovinceid)
 		{
 			try
 			{
+				address.StateProvinceID = Convert.ToInt32(stateprovinceid);
 				_searchProvider.AddUpdateDocument(address);
 				return Json(new { Result = "OK", Record = address });
 			}

@@ -75,83 +75,97 @@
                     actions: {
                         deleteAction: 'http://localhost:49908/Search/DeleteAddress',
                         listAction: function (postData, jtParams) {
-                            return $.Deferred(function ($dfd) {
-                                console.log(jtParams);
-                                $.ajax({
-                                    url: 'http://localhost:49908/Search/GetAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
-                                    type: 'POST',
-                                    dataType: 'json',
-                                    data: jtParams,
-                                    success: function (data) {
-                                        $dfd.resolve(data);
-                                    },
-                                    error: function () {
-                                        $dfd.reject();
-                                    }
-                                });
+                            var resultData = $.ajax({
+                                url: 'http://localhost:49908/Search/GetAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
+                                type: 'POST',
+                                dataType: 'json',
+                                data: jtParams,
+                                success: function (data) {
+                                    return data;
+                                },
+                                error: function () {
+
+                                }
                             });
+
+                            return resultData;
                         },
-                        createAction: 'http://localhost:49908/Search/CreateAddressForStateProvince',
-                    updateAction: function(postData) {
-                        return $.Deferred(function ($dfd) {
-                            $.ajax({
+                        createAction: function(postData) {
+                            var resultData = $.ajax({
+                                url: 'http://localhost:49908/Search/CreateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
+                                type: 'POST',
+                                dataType: 'json',
+                                data: postData,
+                                success: function (data) {
+                                    return data;
+                                },
+                                error: function () {
+                                       
+                                }
+                            });
+
+                            return resultData;
+                        },
+                        updateAction: function(postData) {
+                            var resultData = $.ajax({
                                 url: 'http://localhost:49908/Search/UpdateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
                                 type: 'POST',
                                 dataType: 'json',
                                 data: postData,
                                 success: function (data) {
-                                    $dfd.resolve(data);
+                                    return data;
                                 },
                                 error: function () {
-                                    $dfd.reject();
+                                       
                                 }
                             });
-                        });
+
+                            return resultData;
+                        }
+                    },
+                    fields: {
+                        AddressID: {
+                            key: true,
+                            create: false,
+                            edit: false,
+                            list: true
+                        },
+                        AddressLine1: {
+                            title: 'AddressLine1',
+                            width: '20%'
+                        },
+                        AddressLine2: {
+                            title: 'AddressLine2',
+                            create: true,
+                            edit: true,
+                            width: '20%'
+                        },
+                        City: {
+                            title: 'City',
+                            create: true,
+                            edit: true,
+                            width: '15%'
+                        },
+                        StateProvinceID: {
+                            title: 'StateProvinceID',
+                            create: false,
+                            edit: false,
+                            width: '10%'
+                        },
+                        PostalCode: {
+                            title: 'PostalCode',
+                            create: true,
+                            edit: true,
+                            width: '10%'
+                        },
+                        ModifiedDate: {
+                            title: 'ModifiedDate',
+                            edit: false,
+                            create: false,
+                            width: '15%',
+                            display: function (data) { return moment(data.record.ModifiedDate).format('DD/MM/YYYY HH:mm:ss'); }
+                        }
                     }
-                },
-                fields: {
-                    AddressID: {
-                        key: true,
-                        create: false,
-                        edit: false,
-                        list: true
-                    },
-                    AddressLine1: {
-                        title: 'AddressLine1',
-                        width: '20%'
-                    },
-                    AddressLine2: {
-                        title: 'AddressLine2',
-                        create: true,
-                        edit: true,
-                        width: '20%'
-                    },
-                    City: {
-                        title: 'City',
-                        create: true,
-                        edit: true,
-                        width: '15%'
-                    },
-                    StateProvinceID: {
-                        title: 'StateProvinceID',
-                        create: false,
-                        edit: false,
-                        width: '10%'
-                    },
-                    PostalCode: {
-                        title: 'PostalCode',
-                        create: true,
-                        edit: true,
-                        width: '10%'
-                    },
-                    ModifiedDate: {
-                        title: 'ModifiedDate',
-                        edit: false,
-                        create: false,
-                        width: '15%',
-                        display: function (data) { return moment(data.record.ModifiedDate).format('DD/MM/YYYY HH:mm:ss'); }
-                    }
-                }
             });
         });
     </script>
