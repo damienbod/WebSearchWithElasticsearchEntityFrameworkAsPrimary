@@ -1,0 +1,189 @@
+﻿@model WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models.SearchModel
+
+<br/>
+
+<fieldset class="form">
+    <legend></legend>
+    <table width="500">
+        <tr>
+            <th></th>
+        </tr>
+        <tr>
+            <td>
+                <label for="autocomplete">Search: </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="autocomplete" type="text" style="width:500px" />
+            </td>
+        </tr>
+        
+        
+    </table>
+</fieldset>
+
+<div id="addressResultsForStateProvince" />
+<input name="selectedstateprovinceid" id="selectedstateprovinceid" type="hidden" value="" />
+
+@section scripts
+{
+    <link href="http://localhost:49907/Content/themes/flat/jquery-ui-1.10.3.min.css" rel="stylesheet" />
+    <link href="~/Scripts/jtable/themes/jqueryui/jtable_jqueryui.min.css" rel="stylesheet" />
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+
+            var updateResults = [];
+            $("input#autocomplete").autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        url: "http://localhost:49907/Search/search",
+                        dataType: "json",
+                        data: {
+                            term: request.term,
+                        },
+                        success: function(data) {
+                            var itemArray = new Array();
+                            for (i = 0; i < data.length; i++) {
+                                var labelData = data[i].Name + ", " + data[i].StateProvinceCode + ", " + data[i].CountryRegionCode;
+                                itemArray[i] = { label: labelData, value: labelData, data: data[i] }
+                            }
+
+                            console.log(itemArray);
+                            response(itemArray);
+                        },
+                        error: function(data, type) {
+                            console.log(type);
+                        }
+                    });
+                },
+                select: function(event, ui) {
+                    $("#selectedstateprovinceid").val(ui.item.data.StateProvinceID);
+                    $('#addressResultsForStateProvince').jtable('load', {selectedstateprovinceid : ui.item.data.StateProvinceID});
+                    console.log(ui.item);
+                }
+            });
+
+                $('#addressResultsForStateProvince').jtable({
+                    title: 'Address list of selected StateProvince',
+                    paging: true,
+                    pageSize: 10,
+                    sorting: true,
+                    multiSorting: true,
+                    defaultSorting: 'City asc',
+                    actions: {
+                        deleteAction: function (postData) {
+                            return $.Deferred(function ($dfd) {
+                                $.ajax({
+                                    url: 'http://localhost:49907/Search/DeleteAddress',
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: postData,
+                                    success: function (data) {
+                                        $dfd.resolve(data);
+                                    },
+                                    error: function () {
+                                        $dfd.reject();
+                                    }
+                                });
+                            });
+                        },
+                        listAction: function (postData, jtParams) {
+                            return $.Deferred(function ($dfd) {
+
+                                console.log(jtParams);
+                                $.ajax({
+                                    url: 'http://localhost:49907/Search/GetAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: jtParams,
+                                    success: function (data) {
+                                        $dfd.resolve(data);
+                                    },
+                                    error: function () {
+                                        $dfd.reject();
+                                    }
+                                });
+                            });
+                        },
+                        createAction: function (postData) {
+                            return $.Deferred(function ($dfd) {
+                                $.ajax({
+                                    url: 'http://localhost:49907/Search/CreateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: postData,
+                                    success: function (data) {
+                                        $dfd.resolve(data);
+                                    },
+                                    error: function () {
+                                        $dfd.reject();
+                                    }
+                                });
+                            });
+                        },
+                    updateAction: function(postData) {
+                        return $.Deferred(function ($dfd) {
+                            $.ajax({
+                                url: 'http://localhost:49907/Search/CreateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
+                                type: 'POST',
+                                dataType: 'json',
+                                data: postData,
+                                success: function (data) {
+                                    $dfd.resolve(data);
+                                },
+                                error: function () {
+                                    $dfd.reject();
+                                }
+                            });
+                        });
+                    }
+                },
+                fields: {
+                    AddressID: {
+                        key: true,
+                        create: true,
+                        edit: true,
+                        list: true
+                    },
+                    AddressLine1: {
+                        title: 'AddressLine1',
+                        width: '20%'
+                    },
+                    AddressLine2: {
+                        title: 'AddressLine2',
+                        create: true,
+                        edit: true,
+                        width: '20%'
+                    },
+                    City: {
+                        title: 'City',
+                        create: true,
+                        edit: true,
+                        width: '15%'
+                    },
+                    StateProvinceID: {
+                        title: 'StateProvinceID',
+                        create: false,
+                        edit: false,
+                        width: '10%'
+                    },
+                    PostalCode: {
+                        title: 'PostalCode',
+                        create: true,
+                        edit: true,
+                        width: '10%'
+                    },
+                    ModifiedDate: {
+                        title: 'ModifiedDate',
+                        edit: false,
+                        create: false,
+                        width: '15%',
+                        display: function (data) { return moment(data.record.ModifiedDate).format('DD/MM/YYYY HH:mm:ss'); }
+                    }
+                }
+            });
+        });
+    </script>
+}
