@@ -13,18 +13,20 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 	{
 		private const string ConnectionString = "http://localhost:9200/";
 		private readonly IElasticsearchMappingResolver _elasticsearchMappingResolver;
-		private readonly ElasticsearchContext _context;
+		private readonly ElasticsearchContext _elasticsearchContext;
+		private readonly EfModel _entityFrameworkContext;
 
 		public ElasticsearchProvider()
 		{
 			_elasticsearchMappingResolver = new ElasticsearchMappingResolver();
 			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Address), new ElasticsearchMappingAddress());
-		    _context = new ElasticsearchContext(ConnectionString, new ElasticsearchSerializerConfiguration(_elasticsearchMappingResolver,true,true));
+		    _elasticsearchContext = new ElasticsearchContext(ConnectionString, new ElasticsearchSerializerConfiguration(_elasticsearchMappingResolver,true,true));
+			_entityFrameworkContext = new EfModel();
 		}
 
 		public IEnumerable<T> QueryString<T>(string term) 
 		{ 
-			return _context.Search<T>(BuildQueryStringSearch(term)).PayloadResult.ToList();
+			return _elasticsearchContext.Search<T>(BuildQueryStringSearch(term)).PayloadResult.ToList();
 		}
 
 		private string BuildQueryStringSearch(string term)
@@ -49,8 +51,14 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 
 		public void AddUpdateDocument(Address address)
 		{
-			_context.AddUpdateDocument(address, address.AddressID, address.StateProvinceID);
-			_context.SaveChanges();
+			address.ModifiedDate = DateTime.UtcNow;
+			address.rowguid = Guid.NewGuid();
+			var entityAddress = _entityFrameworkContext.Address.Add(address);
+			_entityFrameworkContext.SaveChanges();
+
+			// we use the entity result with the proper ID
+			_elasticsearchContext.AddUpdateDocument(entityAddress, entityAddress.AddressID, entityAddress.StateProvinceID);
+			_elasticsearchContext.SaveChanges();
 		}
 
 		public void UpdateAddresses(long stateProvinceId, List<Address> addresses)
@@ -58,27 +66,33 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			foreach (var item in addresses)
 			{
 				// if the parent has changed, the child needs to be deleted and created again. This in not required in this example
-				var addressItem = _context.SearchById<Address>(item.AddressID);
+				var addressItem = _elasticsearchContext.SearchById<Address>(item.AddressID);
 				if (addressItem.StateProvinceID != item.StateProvinceID)
 				{
-					_context.DeleteDocument<Address>(item.AddressID);
+					_elasticsearchContext.DeleteDocument<Address>(item.AddressID);
 				}
 
-				_context.AddUpdateDocument(item, item.AddressID, item.StateProvinceID);
+				// need to update a entity here
+				_entityFrameworkContext.Address.Add(addressItem);
+				_elasticsearchContext.AddUpdateDocument(item, item.AddressID, item.StateProvinceID);
 			}
 
-			_context.SaveChanges();
+			_entityFrameworkContext.SaveChanges();
+			_elasticsearchContext.SaveChanges();
 		}
 
 		public void DeleteAddress(long addressId)
-		{
-			_context.DeleteDocument<Address>(addressId);
-			_context.SaveChanges();
+		{	
+			_entityFrameworkContext.Address.Remove(_entityFrameworkContext.Address.First(t => t.AddressID == addressId));
+			_elasticsearchContext.DeleteDocument<Address>(addressId);
+
+			_entityFrameworkContext.SaveChanges();
+			_elasticsearchContext.SaveChanges();
 		}
 
 		public List<SelectListItem> GetAllStateProvinces()
 		{
-			var result = from element in _context.Search<StateProvince>("").PayloadResult
+			var result = from element in _elasticsearchContext.Search<StateProvince>("").PayloadResult
 						 select new SelectListItem
 						 {
 							 Text = string.Format("StateProvince: {0}, CountryRegionCode {1}", 
@@ -92,7 +106,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		public PagingTableResult<Address> GetAllAddressesForStateProvince(string stateprovinceid, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
 			var result = new PagingTableResult<Address>();
-			var data = _context.Search<Address>(
+			var data = _elasticsearchContext.Search<Address>(
 							BuildSearchForChildDocumentsWithIdAndParentType(
 								stateprovinceid, 
 								"stateprovince",
@@ -131,7 +145,8 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			if (!isDisposed)
 			{
 				isDisposed = true;
-				_context.Dispose();
+				_elasticsearchContext.Dispose();
+				_entityFrameworkContext.Dispose();
 			}
 		}
 	}
