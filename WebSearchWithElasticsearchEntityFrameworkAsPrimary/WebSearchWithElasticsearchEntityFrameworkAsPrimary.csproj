@@ -65,6 +65,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -134,18 +135,32 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\SearchController.cs" />
+    <Compile Include="DomainModel\Address.cs" />
+    <Compile Include="DomainModel\AddressType.cs" />
+    <Compile Include="DomainModel\BusinessEntity.cs" />
+    <Compile Include="DomainModel\BusinessEntityAddress.cs" />
+    <Compile Include="DomainModel\BusinessEntityContact.cs" />
+    <Compile Include="DomainModel\ContactType.cs" />
+    <Compile Include="DomainModel\CountryRegion.cs" />
+    <Compile Include="DomainModel\EfModel.cs" />
+    <Compile Include="DomainModel\EmailAddress.cs" />
+    <Compile Include="DomainModel\Password.cs" />
+    <Compile Include="DomainModel\Person.cs" />
+    <Compile Include="DomainModel\PersonPhone.cs" />
+    <Compile Include="DomainModel\PhoneNumberType.cs" />
+    <Compile Include="DomainModel\StateProvince.cs" />
+    <Compile Include="DomainModel\vAdditionalContactInfo.cs" />
+    <Compile Include="DomainModel\vStateProvinceCountryRegion.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\PagingTableResult.cs" />
     <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Search\Address.cs" />
-    <Compile Include="Search\CountryRegion.cs" />
     <Compile Include="Search\ElasticSearchMappingAddress.cs" />
     <Compile Include="Search\ElasticSearchProvider.cs" />
+    <Compile Include="Search\InitializeSearchEngine.cs" />
     <Compile Include="Search\ISearchProvider.cs" />
-    <Compile Include="Search\StateProvince.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />

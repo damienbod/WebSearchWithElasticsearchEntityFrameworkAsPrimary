@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models;
 
 namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search;
 
 namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary
 {
@@ -9,6 +10,9 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary
 	{
 		protected void Application_Start()
 		{
+			//var initializeSearchEngine = new InitializeSearchEngine();
+			//initializeSearchEngine.SaveToElasticsearchStateProvince();
+
 			AreaRegistration.RegisterAllAreas();
 			GlobalConfiguration.Configure(WebApiConfig.Register);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
