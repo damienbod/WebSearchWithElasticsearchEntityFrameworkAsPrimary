@@ -77,12 +77,12 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 					_elasticsearchContext.DeleteDocument<Address>(addressItem.AddressID);
 				}
 
-				entityAddress.AddressLine1 = addressItem.AddressLine1;
-				entityAddress.AddressLine2 = addressItem.AddressLine2;
-				entityAddress.City = addressItem.City;
+				entityAddress.AddressLine1 = item.AddressLine1;
+				entityAddress.AddressLine2 = item.AddressLine2;
+				entityAddress.City = item.City;
 				entityAddress.ModifiedDate = DateTime.UtcNow;
-				entityAddress.PostalCode = addressItem.PostalCode;
-				entityAddress.rowguid = addressItem.rowguid;
+				entityAddress.PostalCode = item.PostalCode;
+				item.rowguid = entityAddress.rowguid;
 
 				_elasticsearchContext.AddUpdateDocument(item, item.AddressID, item.StateProvinceID);
 			}
@@ -140,6 +140,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		// }
 		private string BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
+			// todo adding sorting...
 			var buildJson = new StringBuilder();
 			buildJson.AppendLine("{");
 			buildJson.AppendLine("\"from\" : " + jtStartIndex + ", \"size\" : " + jtPageSize + ",");
