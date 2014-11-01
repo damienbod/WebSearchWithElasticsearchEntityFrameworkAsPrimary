@@ -12,7 +12,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 {
 	public class ElasticsearchProvider : ISearchProvider, IDisposable
 	{
-		private const string ConnectionString = "http://localhost:9200/";
+		private const string ConnectionString = "http://localhost.fiddler:9200/";
 		private readonly IElasticsearchMappingResolver _elasticsearchMappingResolver;
 		private readonly ElasticsearchContext _elasticsearchContext;
 		private readonly EfModel _entityFrameworkContext;
@@ -83,6 +83,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 				entityAddress.ModifiedDate = DateTime.UtcNow;
 				entityAddress.PostalCode = item.PostalCode;
 				item.rowguid = entityAddress.rowguid;
+				item.ModifiedDate = DateTime.UtcNow;
 
 				_elasticsearchContext.AddUpdateDocument(item, item.AddressID, item.StateProvinceID);
 			}
@@ -140,13 +141,17 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		// }
 		private string BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
+			var sorts = jtSorting.Split(' ');
 			// todo adding sorting...
 			var buildJson = new StringBuilder();
 			buildJson.AppendLine("{");
 			buildJson.AppendLine("\"from\" : " + jtStartIndex + ", \"size\" : " + jtPageSize + ",");
 			buildJson.AppendLine("\"query\": {");
 			buildJson.AppendLine("\"term\": {\"_parent\": \"" + parentType + "#" + parentId + "\"}");
-			buildJson.AppendLine("}");
+			buildJson.AppendLine("},");
+			buildJson.AppendLine("\"sort\": { \"" + sorts[0].ToLower() + "\": { \"order\": \"" + sorts[1].ToLower() + "\" }}");
+			 
+
 			buildJson.AppendLine("}");
 
 			return buildJson.ToString();
