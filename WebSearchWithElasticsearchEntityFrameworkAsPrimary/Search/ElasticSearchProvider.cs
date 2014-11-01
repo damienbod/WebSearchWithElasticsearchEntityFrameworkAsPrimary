@@ -142,18 +142,18 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		private string BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
 			var sorts = jtSorting.Split(' ');
-			// todo adding sorting...
 			var buildJson = new StringBuilder();
 			buildJson.AppendLine("{");
 			buildJson.AppendLine("\"from\" : " + jtStartIndex + ", \"size\" : " + jtPageSize + ",");
 			buildJson.AppendLine("\"query\": {");
 			buildJson.AppendLine("\"term\": {\"_parent\": \"" + parentType + "#" + parentId + "\"}");
-			buildJson.AppendLine("},");
-			buildJson.AppendLine("\"sort\": { \"" + sorts[0].ToLower() + "\": { \"order\": \"" + sorts[1].ToLower() + "\" }}");
-			 
-
 			buildJson.AppendLine("}");
-
+			if (sorts.Length == 2)
+			{
+				buildJson.Append(",");
+				buildJson.AppendLine("\"sort\": { \"" + sorts[0].ToLower() + "\": { \"order\": \"" + sorts[1].ToLower() + "\" }}");
+			}
+			buildJson.AppendLine("}");
 			return buildJson.ToString();
 		}
 
