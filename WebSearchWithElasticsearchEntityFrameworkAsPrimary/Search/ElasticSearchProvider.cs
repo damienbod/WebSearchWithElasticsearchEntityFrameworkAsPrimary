@@ -12,7 +12,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 {
 	public class ElasticsearchProvider : ISearchProvider, IDisposable
 	{
-		private const string ConnectionString = "http://localhost.fiddler:9200/";
+		private const string ConnectionString = "http://localhost:9200/";
 		private readonly IElasticsearchMappingResolver _elasticsearchMappingResolver;
 		private readonly ElasticsearchContext _elasticsearchContext;
 		private readonly EfModel _entityFrameworkContext;
