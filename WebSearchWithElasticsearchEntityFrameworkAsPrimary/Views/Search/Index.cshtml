@@ -23,6 +23,7 @@
     </table>
 </fieldset>
 
+
 <div id="addressResultsForStateProvince" />
 <input name="selectedstateprovinceid" id="selectedstateprovinceid" type="hidden" value="" />
 
@@ -73,38 +74,38 @@
                     multiSorting: true,
                     defaultSorting: 'City asc',
                     actions: {
-                        deleteAction: function (postData) {
-                            
-                            var resultData = $.ajax({
-                                url: 'http://localhost:49908/Search/DeleteAddress?addressId=' + postData.AddressID,
-                                type: 'POST',
-                                dataType: 'json',
-                                success: function (data) {
-                                    return data;
-                                },
-                                error: function () {
-
-                                }
+                        deleteAction: function (postData, jtParams) {
+                            return $.Deferred(function ($dfd) {
+                                $.ajax({
+                                    url: 'http://localhost:49908/Search/DeleteAddress?addressId=' + postData.AddressID,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: postData,
+                                    success: function (data) {
+                                        $dfd.resolve(data);
+                                    },
+                                    error: function () {
+                                        $dfd.reject();
+                                    }
+                                });
                             });
-
-                            return resultData;
                         },
                         listAction: function (postData, jtParams) {
-                            var resultData = $.ajax({
-                                url: 'http://localhost:49908/Search/GetAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
-                                type: 'POST',
-                                dataType: 'json',
-                                data: jtParams,
-                                success: function (data) {
-                                    return data;
-                                },
-                                error: function () {
-
-                                }
+                            return $.Deferred(function ($dfd) {
+                                $.ajax({
+                                    url: 'http://localhost:49908/Search/GetAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val() + '&jtStartIndex=' + jtParams.jtStartIndex + '&jtPageSize=' + jtParams.jtPageSize + '&jtSorting=' + jtParams.jtSorting,
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    data: postData,
+                                    success: function (data) {
+                                        $dfd.resolve(data);
+                                    },
+                                    error: function () {
+                                        $dfd.reject();
+                                    }
+                                });
                             });
-
-                            return resultData;
-                        },
+                        },                   
                         createAction: function(postData) {
                             var resultData = $.ajax({
                                 url: 'http://localhost:49908/Search/CreateAddressForStateProvince?stateprovinceid=' + $('#selectedstateprovinceid').val(),
@@ -137,6 +138,17 @@
 
                             return resultData;
                         }
+                    },
+                    recordAdded: function (event, data)
+                    {            
+                        // data.record argument. You can get the response JSON object returned from server as data.serverResponse.
+                        //$('#addressResultsForStateProvince').jtable('load', { selectedstateprovinceid: $('#selectedstateprovinceid').val() });
+                    },
+                    recordUpdated: function(event, data){
+                        //after record updation, reload the records
+                    },
+                    recordDeleted: function (event, data) {
+                        //after record updation, reload the records
                     },
                     fields: {
                         AddressID: {
