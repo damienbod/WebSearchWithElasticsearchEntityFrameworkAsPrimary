@@ -21,7 +21,6 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		{
 			_elasticsearchMappingResolver = new ElasticsearchMappingResolver();
 			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Address), new ElasticsearchMappingAddress());
-			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Address).BaseType, new ElasticsearchMappingAddress());
 		    _elasticsearchContext = new ElasticsearchContext(ConnectionString, new ElasticsearchSerializerConfiguration(_elasticsearchMappingResolver,true,true));
 			_entityFrameworkContext = new EfModel();
 		}
@@ -137,7 +136,8 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		//  "from": 0, "size": 10,
 		//  "query": {
 		//	"term": { "_parent": "parentdocument#7" }
-		//  }
+		//  },
+		//  "sort": { "city" : { "order": "desc" } }"
 		// }
 		private string BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
