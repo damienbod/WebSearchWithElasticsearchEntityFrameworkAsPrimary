@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using ElasticsearchCRUD;
+using ElasticsearchCRUD.ContextAddDeleteUpdate;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models;
 
@@ -58,7 +59,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			_entityFrameworkContext.SaveChanges();
 
 			// we use the entity result with the proper ID
-			_elasticsearchContext.AddUpdateDocument(entityAddress, entityAddress.AddressID, entityAddress.StateProvinceID);
+			_elasticsearchContext.AddUpdateDocument(entityAddress, entityAddress.AddressID, new RoutingDefinition{ ParentId = entityAddress.StateProvinceID});
 			_elasticsearchContext.SaveChanges();
 		}
 
@@ -84,7 +85,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 				item.rowguid = entityAddress.rowguid;
 				item.ModifiedDate = DateTime.UtcNow;
 
-				_elasticsearchContext.AddUpdateDocument(item, item.AddressID, item.StateProvinceID);
+				_elasticsearchContext.AddUpdateDocument(item, item.AddressID,  new RoutingDefinition{ ParentId =item.StateProvinceID});
 			}
 
 			_entityFrameworkContext.SaveChanges();
