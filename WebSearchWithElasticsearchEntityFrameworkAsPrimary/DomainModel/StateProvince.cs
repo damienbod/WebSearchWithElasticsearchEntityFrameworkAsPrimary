@@ -1,3 +1,5 @@
+using ElasticsearchCRUD.ContextAddDeleteUpdate.CoreTypeAttributes;
+
 namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel
 {
     using System;
@@ -25,6 +27,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel
         [StringLength(3)]
         public string CountryRegionCode { get; set; }
 
+		[ElasticsearchBoolean]
         public bool IsOnlyStateProvinceFlag { get; set; }
 
         [Required]

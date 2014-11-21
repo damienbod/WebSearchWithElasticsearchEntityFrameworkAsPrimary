@@ -41,7 +41,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 
 						if (firstRun)
 						{
-							elasticSearchContext.SaveChangesAndInitMappingsForChildDocuments();
+							elasticSearchContext.SaveChangesAndInitMappings();
 							firstRun = false;
 						}
 						else
