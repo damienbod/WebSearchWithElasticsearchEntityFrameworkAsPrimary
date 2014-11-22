@@ -10,8 +10,8 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary
 	{
 		protected void Application_Start()
 		{
-			var initializeSearchEngine = new InitializeSearchEngine();
-			initializeSearchEngine.SaveToElasticsearchStateProvince();
+			//var initializeSearchEngine = new InitializeSearchEngine();
+			//initializeSearchEngine.SaveToElasticsearchStateProvince();
 
 			AreaRegistration.RegisterAllAreas();
 			GlobalConfiguration.Configure(WebApiConfig.Register);
