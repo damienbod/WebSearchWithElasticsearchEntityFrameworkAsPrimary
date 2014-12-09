@@ -26,9 +26,10 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			_entityFrameworkContext = new EfModel();
 		}
 
-		public IEnumerable<T> QueryString<T>(string term) 
-		{ 
-			return _elasticsearchContext.Search<T>(BuildQueryStringSearch(term)).PayloadResult.ToList();
+		public IEnumerable<T> QueryString<T>(string term)
+		{
+			var results = _elasticsearchContext.Search<T>(BuildQueryStringSearch(term));
+			return results.PayloadResult.Hits.HitsResult.Select(t =>t.Source).ToList();
 		}
 
 		private string BuildQueryStringSearch(string term)
@@ -105,12 +106,12 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 
 		public List<SelectListItem> GetAllStateProvinces()
 		{
-			var result = from element in _elasticsearchContext.Search<StateProvince>("").PayloadResult
+			var result = from element in _elasticsearchContext.Search<StateProvince>("").PayloadResult.Hits.HitsResult
 						 select new SelectListItem
 						 {
-							 Text = string.Format("StateProvince: {0}, CountryRegionCode {1}", 
-							 element.StateProvinceCode, element.CountryRegionCode), 
-							 Value = element.StateProvinceID.ToString(CultureInfo.InvariantCulture)
+							 Text = string.Format("StateProvince: {0}, CountryRegionCode {1}",
+							 element.Source.StateProvinceCode, element.Source.CountryRegionCode),
+							 Value = element.Source.StateProvinceID.ToString(CultureInfo.InvariantCulture)
 						 };
 
 			return result.ToList();
@@ -128,8 +129,8 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 								jtSorting)
 						);
 
-			result.Items = data.PayloadResult.ToList();
-			result.TotalCount = data.TotalHits;
+			result.Items = data.PayloadResult.Hits.HitsResult.Select(t => t.Source).ToList();
+			result.TotalCount = data.PayloadResult.Hits.Total;
 			return result;
 		}
 
