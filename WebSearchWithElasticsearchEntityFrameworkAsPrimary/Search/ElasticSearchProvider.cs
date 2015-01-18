@@ -6,6 +6,9 @@ using System.Text;
 using System.Web.Mvc;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextAddDeleteUpdate.IndexModel;
+using ElasticsearchCRUD.Model.SearchModel;
+using ElasticsearchCRUD.Model.SearchModel.Queries;
+using ElasticsearchCRUD.Model.SearchModel.Sorting;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models;
 
@@ -32,7 +35,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			return results.PayloadResult.Hits.HitsResult.Select(t =>t.Source).ToList();
 		}
 
-		private string BuildQueryStringSearch(string term)
+		private ElasticsearchCRUD.Model.SearchModel.Search BuildQueryStringSearch(string term)
 		{
 			var names = "";
 			if (term != null)
@@ -40,16 +43,12 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 				names = term.Replace("+", " OR *");
 			}
 
-			var buildJson = new StringBuilder();
-			buildJson.AppendLine("{");
-			buildJson.AppendLine(" \"query\": {");
-			buildJson.AppendLine("   \"query_string\": {");
-			buildJson.AppendLine("      \"query\": \"" + names + "*\"");
-			buildJson.AppendLine("     }");
-			buildJson.AppendLine("  }");
-			buildJson.AppendLine("}");
+			var search = new ElasticsearchCRUD.Model.SearchModel.Search
+			{
+				Query = new Query(new QueryStringQuery(names + "*"))
+			};
 
-			return buildJson.ToString();
+			return search;
 		}
 
 		public void AddUpdateDocument(Address address)
@@ -141,22 +140,28 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		//  },
 		//  "sort": { "city" : { "order": "desc" } }"
 		// }
-		private string BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
+		private ElasticsearchCRUD.Model.SearchModel.Search BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
+			var search = new ElasticsearchCRUD.Model.SearchModel.Search
+			{
+				From = jtStartIndex,
+				Size = jtPageSize,
+				Query = new Query(new TermQuery("_parent", parentType + "#" + parentId))	
+			};
+
 			var sorts = jtSorting.Split(' ');
-			var buildJson = new StringBuilder();
-			buildJson.AppendLine("{");
-			buildJson.AppendLine("\"from\" : " + jtStartIndex + ", \"size\" : " + jtPageSize + ",");
-			buildJson.AppendLine("\"query\": {");
-			buildJson.AppendLine("\"term\": {\"_parent\": \"" + parentType + "#" + parentId + "\"}");
-			buildJson.AppendLine("}");
 			if (sorts.Length == 2)
 			{
-				buildJson.Append(",");
-				buildJson.AppendLine("\"sort\": { \"" + sorts[0].ToLower() + "\": { \"order\": \"" + sorts[1].ToLower() + "\" }}");
+				if (sorts[1].ToLower() == "desc")
+				{
+					search.Sort = new SortHolder(new List<ISort> {new SortStandard(sorts[0].ToLower()) {Order = OrderEnum.desc}});
+				}
+				else
+				{
+					search.Sort = new SortHolder(new List<ISort> { new SortStandard(sorts[0].ToLower()) { Order = OrderEnum.asc } });
+				}
 			}
-			buildJson.AppendLine("}");
-			return buildJson.ToString();
+			return search;
 		}
 
 		private bool isDisposed;
