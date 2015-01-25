@@ -11,49 +11,56 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 	{
 		private readonly Stopwatch _stopwatch = new Stopwatch();
 
-		public void SaveToElasticsearchStateProvince()
+		public void SaveToElasticsearchStateProvinceIfitDoesNotExist()
 		{
 			IElasticsearchMappingResolver elasticsearchMappingResolver = new ElasticsearchMappingResolver();
 			using (var elasticSearchContext = new ElasticsearchContext("http://localhost:9200/", new ElasticsearchSerializerConfiguration(elasticsearchMappingResolver, true, true)))
 			{
-				elasticSearchContext.TraceProvider = new ConsoleTraceProvider();
-				using (var databaseEfModel = new EfModel())
+				if (!elasticSearchContext.IndexTypeExists<Address>())
 				{
-					int pointer = 0;
-					const int interval = 20;
-					bool firstRun = true;
-					int length = databaseEfModel.StateProvince.Count();
-
-					while (pointer < length)
+					elasticSearchContext.TraceProvider = new ConsoleTraceProvider();
+					using (var databaseEfModel = new EfModel())
 					{
-						_stopwatch.Start();
-						var collection = databaseEfModel.StateProvince.OrderBy(t => t.StateProvinceID).Skip(pointer).Take(interval).ToList<StateProvince>();
-						_stopwatch.Stop();
-						Console.WriteLine("Time taken for select {0} Address: {1}", interval, _stopwatch.Elapsed);
-						_stopwatch.Reset();
+						int pointer = 0;
+						const int interval = 20;
+						bool firstRun = true;
+						int length = databaseEfModel.StateProvince.Count();
 
-						_stopwatch.Start();
-						foreach (var item in collection)
+						while (pointer < length)
 						{
-							var ee = item.CountryRegion.Name;
-							elasticSearchContext.AddUpdateDocument(item, item.StateProvinceID);
-						}
+							_stopwatch.Start();
+							var collection =
+								databaseEfModel.StateProvince.OrderBy(t => t.StateProvinceID)
+									.Skip(pointer)
+									.Take(interval)
+									.ToList<StateProvince>();
+							_stopwatch.Stop();
+							Console.WriteLine("Time taken for select {0} Address: {1}", interval, _stopwatch.Elapsed);
+							_stopwatch.Reset();
 
-						if (firstRun)
-						{
-							elasticSearchContext.SaveChangesAndInitMappings();
-							firstRun = false;
-						}
-						else
-						{
-							elasticSearchContext.SaveChanges();
-						}
+							_stopwatch.Start();
+							foreach (var item in collection)
+							{
+								var ee = item.CountryRegion.Name;
+								elasticSearchContext.AddUpdateDocument(item, item.StateProvinceID);
+							}
 
-						_stopwatch.Stop();
-						Console.WriteLine("Time taken to insert {0} Address documents: {1}", interval, _stopwatch.Elapsed);
-						_stopwatch.Reset();
-						pointer = pointer + interval;
-						Console.WriteLine("Transferred: {0} items", pointer);
+							if (firstRun)
+							{
+								elasticSearchContext.SaveChangesAndInitMappings();
+								firstRun = false;
+							}
+							else
+							{
+								elasticSearchContext.SaveChanges();
+							}
+
+							_stopwatch.Stop();
+							Console.WriteLine("Time taken to insert {0} Address documents: {1}", interval, _stopwatch.Elapsed);
+							_stopwatch.Reset();
+							pointer = pointer + interval;
+							Console.WriteLine("Transferred: {0} items", pointer);
+						}
 					}
 				}
 			}
