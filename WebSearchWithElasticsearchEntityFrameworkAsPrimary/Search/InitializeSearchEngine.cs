@@ -16,7 +16,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			IElasticsearchMappingResolver elasticsearchMappingResolver = new ElasticsearchMappingResolver();
 			using (var elasticSearchContext = new ElasticsearchContext("http://localhost:9200/", new ElasticsearchSerializerConfiguration(elasticsearchMappingResolver, true, true)))
 			{
-				if (!elasticSearchContext.IndexTypeExists<Address>())
+				if (!elasticSearchContext.IndexTypeExists<StateProvince>())
 				{
 					elasticSearchContext.TraceProvider = new ConsoleTraceProvider();
 					using (var databaseEfModel = new EfModel())
