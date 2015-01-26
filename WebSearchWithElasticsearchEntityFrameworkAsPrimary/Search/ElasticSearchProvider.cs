@@ -152,17 +152,30 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			var sorts = jtSorting.Split(' ');
 			if (sorts.Length == 2)
 			{
+				var order = OrderEnum.asc;
 				if (sorts[1].ToLower() == "desc")
 				{
-					search.Sort = new SortHolder(new List<ISort> {new SortStandard(sorts[0].ToLower()) {Order = OrderEnum.desc}});
+					order = OrderEnum.desc;
 				}
-				else
-				{
-					search.Sort = new SortHolder(new List<ISort> { new SortStandard(sorts[0].ToLower()) { Order = OrderEnum.asc } });
-				}
+
+				search.Sort = CreateSortQuery(sorts[0].ToLower(), order);
 			}
 			return search;
 		}
+
+		public SortHolder CreateSortQuery(string sort, OrderEnum order)
+		{
+			return new SortHolder(
+				new List<ISort>
+				{
+					new SortStandard(sort)
+					{
+						Order = order
+					}
+				}
+			);
+		}
+
 
 		private bool isDisposed;
 		public void Dispose()
