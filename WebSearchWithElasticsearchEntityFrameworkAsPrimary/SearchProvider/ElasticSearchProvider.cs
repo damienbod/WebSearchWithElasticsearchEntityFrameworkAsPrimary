@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextAddDeleteUpdate.IndexModel;
@@ -12,7 +11,7 @@ using ElasticsearchCRUD.Model.SearchModel.Sorting;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models;
 
-namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
+namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 {
 	public class ElasticsearchProvider : ISearchProvider, IDisposable
 	{
@@ -35,7 +34,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 			return results.PayloadResult.Hits.HitsResult.Select(t =>t.Source).ToList();
 		}
 
-		private ElasticsearchCRUD.Model.SearchModel.Search BuildQueryStringSearch(string term)
+		private Search BuildQueryStringSearch(string term)
 		{
 			var names = "";
 			if (term != null)
@@ -43,7 +42,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 				names = term.Replace("+", " OR *");
 			}
 
-			var search = new ElasticsearchCRUD.Model.SearchModel.Search
+			var search = new Search
 			{
 				Query = new Query(new QueryStringQuery(names + "*"))
 			};
@@ -140,9 +139,9 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		//  },
 		//  "sort": { "city" : { "order": "desc" } }"
 		// }
-		private ElasticsearchCRUD.Model.SearchModel.Search BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
+		private Search BuildSearchForChildDocumentsWithIdAndParentType(object parentId, string parentType, int jtStartIndex, int jtPageSize, string jtSorting)
 		{
-			var search = new ElasticsearchCRUD.Model.SearchModel.Search
+			var search = new Search
 			{
 				From = jtStartIndex,
 				Size = jtPageSize,
@@ -177,12 +176,12 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
 		}
 
 
-		private bool isDisposed;
+		private bool _isDisposed;
 		public void Dispose()
 		{
-			if (!isDisposed)
+			if (!_isDisposed)
 			{
-				isDisposed = true;
+				_isDisposed = true;
 				_elasticsearchContext.Dispose();
 				_entityFrameworkContext.Dispose();
 			}

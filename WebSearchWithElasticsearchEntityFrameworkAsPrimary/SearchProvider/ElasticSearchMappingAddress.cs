@@ -1,7 +1,7 @@
 ﻿using System;
 using ElasticsearchCRUD;
 
-namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
+namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 {
 	public class ElasticsearchMappingAddress : ElasticsearchMapping
 	{

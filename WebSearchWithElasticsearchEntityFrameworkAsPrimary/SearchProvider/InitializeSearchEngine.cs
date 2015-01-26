@@ -5,7 +5,7 @@ using ElasticsearchCRUD;
 using ElasticsearchCRUD.Tracing;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 
-namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
+namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 {
 	public class InitializeSearchEngine
 	{

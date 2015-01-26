@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models;
 
-namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Search
+namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 {
 	public interface ISearchProvider
 	{
