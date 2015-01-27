@@ -10,7 +10,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary
 		{
 			bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
 						"~/Scripts/jquery-{version}.js",
-						"~/Scripts/jquery-ui-1.11.1.js"));
+						"~/Scripts/jquery-ui-1.11.2.js"));
 
 			// Use the development version of Modernizr to develop with and learn from. Then, when you're
 			// ready for production, use the build tool at http://modernizr.com to pick only the tests you need.

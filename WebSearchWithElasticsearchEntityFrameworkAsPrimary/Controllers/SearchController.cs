@@ -68,9 +68,9 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.Controllers
 
 		[HttpPost]
 		[Route("DeleteAddress")]
-		public ActionResult DeleteAddress(long addressId)
+		public ActionResult DeleteAddress(int addressId, int stateprovinceid)
 		{
-			_searchProvider.DeleteAddress(addressId);
+			_searchProvider.DeleteAddress(addressId, stateprovinceid);
 			return Json(new { Result = "OK"});
 		}
 	}
