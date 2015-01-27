@@ -11,7 +11,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 
 		void AddUpdateDocument(Address address);
 		void UpdateAddresses(long stateProvinceId, List<Address> addresses);
-		void DeleteAddress(long addressId);
+		void DeleteAddress(int addressId, int stateprovinceid);
 		List<SelectListItem> GetAllStateProvinces();
 		PagingTableResult<Address> GetAllAddressesForStateProvince(string stateprovinceid, int jtStartIndex, int jtPageSize, string jtSorting);
 	}

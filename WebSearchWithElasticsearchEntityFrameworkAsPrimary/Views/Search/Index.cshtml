@@ -70,7 +70,7 @@
                 deleteAction: function (postData, jtParams) {
                     return $.Deferred(function ($dfd) {
                         $.ajax({
-                            url: 'http://localhost:49908/Search/DeleteAddress?addressId=' + postData.AddressID,
+                            url: 'http://localhost:49908/Search/DeleteAddress?addressId=' + postData.AddressID + "&stateprovinceid=" + $('#selectedstateprovinceid').val(),
                             type: 'POST',
                             dataType: 'json',
                             data: postData,

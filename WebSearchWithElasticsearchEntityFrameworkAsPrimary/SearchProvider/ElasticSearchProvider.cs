@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextAddDeleteUpdate.IndexModel;
+using ElasticsearchCRUD.Model;
 using ElasticsearchCRUD.Model.SearchModel;
 using ElasticsearchCRUD.Model.SearchModel.Queries;
 using ElasticsearchCRUD.Model.SearchModel.Sorting;
+using ElasticsearchCRUD.Tracing;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.DomainModel;
 using WebSearchWithElasticsearchEntityFrameworkAsPrimary.Models;
 
@@ -15,7 +18,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 {
 	public class ElasticsearchProvider : ISearchProvider, IDisposable
 	{
-		private const string ConnectionString = "http://localhost:9200/";
+		private const string ConnectionString = "http://localhost.fiddler:9200/";
 		private readonly IElasticsearchMappingResolver _elasticsearchMappingResolver;
 		private readonly ElasticsearchContext _elasticsearchContext;
 		private readonly EfModel _entityFrameworkContext;
@@ -25,6 +28,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 			_elasticsearchMappingResolver = new ElasticsearchMappingResolver();
 			_elasticsearchMappingResolver.AddElasticSearchMappingForEntityType(typeof(Address), new ElasticsearchMappingAddress());
 		    _elasticsearchContext = new ElasticsearchContext(ConnectionString, new ElasticsearchSerializerConfiguration(_elasticsearchMappingResolver,true,true));
+			_elasticsearchContext.TraceProvider = new ConsoleTraceProvider();
 			_entityFrameworkContext = new EfModel();
 		}
 
@@ -91,15 +95,16 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 			_elasticsearchContext.SaveChanges();
 		}
 
-		public void DeleteAddress(long addressId)
-		{
-			var address = new Address { AddressID = (int)addressId };
+		public void DeleteAddress(int addressId, int stateprovinceid)
+		{		
+			var address = new Address { AddressID = addressId };
 			_entityFrameworkContext.Address.Attach(address);
 			_entityFrameworkContext.Address.Remove(address);
-			_elasticsearchContext.DeleteDocument<Address>(addressId);
-
+	
 			_entityFrameworkContext.SaveChanges();
-			_elasticsearchContext.SaveChanges();
+
+			_elasticsearchContext.DeleteDocument<Address>(addressId, new RoutingDefinition { ParentId = stateprovinceid });
+			var result = _elasticsearchContext.SaveChanges();
 		}
 
 		public List<SelectListItem> GetAllStateProvinces()
