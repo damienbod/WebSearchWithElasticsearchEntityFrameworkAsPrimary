@@ -75,7 +75,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 
 				if (entityAddress.StateProvinceID != addressItem.StateProvinceID)
 				{
-					_elasticsearchContext.DeleteDocument<Address>(addressItem.AddressID);
+					_elasticsearchContext.DeleteDocument<Address>(addressItem.AddressID, new RoutingDefinition { ParentId = addressItem.StateProvinceID });
 				}
 
 				entityAddress.AddressLine1 = item.AddressLine1;
