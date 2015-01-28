@@ -32,13 +32,9 @@
     <link href="~/Scripts/jtable/themes/jqueryui/jtable_jqueryui.min.css" rel="stylesheet" />
     <script type="text/javascript">
 
-        //function RefreshjTableForm() {
-        //   $('#addressResultsForStateProvince').jtable('load', { selectedstateprovinceid: $('#selectedstateprovinceid').val() });
-        //}
 
         function RefreshPage() {
-            // hack because jTable does not refresh view properly after delete or create
-            //window.location.href = window.location.href;         
+            $('#addressResultsForStateProvince').jtable('load', { selectedstateprovinceid: $('#selectedstateprovinceid').val() });
         }
 
         $('#addressResultsForStateProvince').jtable({
