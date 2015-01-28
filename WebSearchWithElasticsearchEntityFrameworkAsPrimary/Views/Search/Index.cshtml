@@ -23,8 +23,6 @@
     </table>
 </fieldset>
 
-@*<input type="button" onclick="RefreshjTableForm()" value="Refresh Table" style="width:500px" />*@
-
 <div id="addressResultsForStateProvince" />
 <input name="selectedstateprovinceid" id="selectedstateprovinceid" type="hidden" value="" />
 
@@ -34,13 +32,13 @@
     <link href="~/Scripts/jtable/themes/jqueryui/jtable_jqueryui.min.css" rel="stylesheet" />
     <script type="text/javascript">
 
-        function RefreshjTableForm() {
-           $('#addressResultsForStateProvince').jtable('load', { selectedstateprovinceid: $('#selectedstateprovinceid').val() });
-        }
+        //function RefreshjTableForm() {
+        //   $('#addressResultsForStateProvince').jtable('load', { selectedstateprovinceid: $('#selectedstateprovinceid').val() });
+        //}
 
         function RefreshPage() {
             // hack because jTable does not refresh view properly after delete or create
-            window.location.href = window.location.href;         
+            //window.location.href = window.location.href;         
         }
 
         $('#addressResultsForStateProvince').jtable({
@@ -120,7 +118,7 @@
                 RefreshPage();
             },
             recordDeleted: function(event, data) {
-                RefreshPage();
+                //RefreshPage();
             },
             fields: {
                 AddressID: {
