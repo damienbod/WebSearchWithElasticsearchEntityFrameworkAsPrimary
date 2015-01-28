@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web.Mvc;
 using ElasticsearchCRUD;
 using ElasticsearchCRUD.ContextAddDeleteUpdate.IndexModel;
-using ElasticsearchCRUD.Model;
 using ElasticsearchCRUD.Model.SearchModel;
 using ElasticsearchCRUD.Model.SearchModel.Queries;
 using ElasticsearchCRUD.Model.SearchModel.Sorting;
@@ -18,7 +16,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 {
 	public class ElasticsearchProvider : ISearchProvider, IDisposable
 	{
-		private const string ConnectionString = "http://localhost.fiddler:9200/";
+		private const string ConnectionString = "http://localhost:9200/";
 		private readonly IElasticsearchMappingResolver _elasticsearchMappingResolver;
 		private readonly ElasticsearchContext _elasticsearchContext;
 		private readonly EfModel _entityFrameworkContext;
@@ -104,7 +102,7 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 			_entityFrameworkContext.SaveChanges();
 
 			_elasticsearchContext.DeleteDocument<Address>(addressId, new RoutingDefinition { ParentId = stateprovinceid });
-			var result = _elasticsearchContext.SaveChanges();
+			_elasticsearchContext.SaveChanges();
 		}
 
 		public List<SelectListItem> GetAllStateProvinces()
