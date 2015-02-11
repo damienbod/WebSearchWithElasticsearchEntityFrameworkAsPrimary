@@ -46,3 +46,7 @@ https://www.nuget.org/packages/ElasticsearchCRUD/
 <a href="https://damienbod.wordpress.com/2015/01/24/search-queries-and-filters-with-elasticsearchcrud/">Part 14: Search Queries and Filters with ElasticsearchCRUD</a>
 
 <a href="https://damienbod.wordpress.com/2015/01/28/elasticsearch-bulk-insert/">Part 15: Elasticsearch Bulk Insert</a>
+
+<a href="https://damienbod.wordpress.com/2015/02/08/elasticsearch-aggregations-with-elasticsearchcrud/">Part 16: Elasticsearch Aggregations With ElasticsearchCRUD</a>
+
+<a href="https://damienbod.wordpress.com/2015/02/10/searching-multiple-indices-and-types-in-elasticsearch/">Part 17: Searching Multiple Indices and Types in Elasticsearch</a>
