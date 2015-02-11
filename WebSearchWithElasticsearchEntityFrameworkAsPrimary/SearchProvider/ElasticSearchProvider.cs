@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
+using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
@@ -98,8 +100,23 @@ namespace WebSearchWithElasticsearchEntityFrameworkAsPrimary.SearchProvider
 			var address = new Address { AddressID = addressId };
 			_entityFrameworkContext.Address.Attach(address);
 			_entityFrameworkContext.Address.Remove(address);
-	
-			_entityFrameworkContext.SaveChanges();
+
+			try
+			{
+				_entityFrameworkContext.SaveChanges();
+			}
+			catch (DbUpdateException ex)
+			{
+				var sqlException = ex.GetBaseException() as SqlException;
+
+				if (sqlException != null)
+				{
+					var number = sqlException.Number;
+
+					Console.WriteLine("delete problem... {0}", number);
+					
+				}
+			}
 
 			_elasticsearchContext.DeleteDocument<Address>(addressId, new RoutingDefinition { ParentId = stateprovinceid });
 			_elasticsearchContext.SaveChanges();
